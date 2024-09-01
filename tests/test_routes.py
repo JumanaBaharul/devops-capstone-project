@@ -176,20 +176,20 @@ class TestAccountService(TestCase):
         resp = self.client.delete(f"{BASE_URL}/0")
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
-    # def test_list_accounts(self):
-    #     """It should List all Accounts"""
-    #     self._create_accounts(5)
-    #     logging.info("Testing listing of accounts...")
-    #     resp = self.client.get(BASE_URL)
-    #     logging.info(f"Response status: {resp.status_code}")
-    #     logging.info(f"Response data: {resp.data}")
-    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
-    #     data = resp.get_json()
-    #     self.assertEqual(len(data), 5)
+    def test_list_accounts(self):
+        """It should List all Accounts"""
+        self._create_accounts(5)
+        logging.info("Testing listing of accounts...")
+        resp = self.client.get(BASE_URL)
+        logging.info(f"Response status: {resp.status_code}")
+        logging.info(f"Response data: {resp.data}")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 5)
 
-    # def test_list_accounts_empty(self):
-    #     """It should return an empty list when there are no Accounts"""
-    #     resp = self.client.get(BASE_URL)
-    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
-    #     data = resp.get_json()
-    #     self.assertEqual(len(data), 0)
+    def test_list_accounts_empty(self):
+        """It should return an empty list when there are no Accounts"""
+        resp = self.client.get(BASE_URL)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 0)
