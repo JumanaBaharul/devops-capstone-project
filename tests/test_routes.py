@@ -12,6 +12,8 @@ from tests.factories import AccountFactory
 from service.common import status  # HTTP Status Codes
 from service.models import db, Account, init_db
 from service.routes import app
+from service import routes
+from service import app
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -138,3 +140,56 @@ class TestAccountService(TestCase):
         """It should not Read an Account that is not found"""
         resp = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_account(self):
+        """It should Update an existing Account"""
+        test_account = Account(name="Update Me")
+        test_account.create()
+        new_account = test_account.serialize()
+        new_account["name"] = "Updated Account"
+        resp = self.client.put(
+            f"{BASE_URL}/{test_account.id}",
+            json=new_account,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        updated_account = resp.get_json()
+        self.assertEqual(updated_account["name"], "Updated Account")
+
+    def test_update_account_not_found(self):
+        """It should not Update an Account that is not found"""
+        resp = self.client.put(
+            f"{BASE_URL}/0",
+            json={"name": "not found"},
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    # def test_delete_account(self):
+    #     """It should Delete an Account"""
+    #     account = self._create_accounts(1)[0]
+    #     resp = self.client.delete(f"{BASE_URL}/{account.id}")
+    #     self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+    # def test_delete_account_not_found(self):
+    #     """It should return 204 when trying to delete a non-existent Account"""
+    #     resp = self.client.delete(f"{BASE_URL}/0")
+    #     self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+    # def test_list_accounts(self):
+    #     """It should List all Accounts"""
+    #     self._create_accounts(5)
+    #     logging.info("Testing listing of accounts...")
+    #     resp = self.client.get(BASE_URL)
+    #     logging.info(f"Response status: {resp.status_code}")
+    #     logging.info(f"Response data: {resp.data}")
+    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
+    #     data = resp.get_json()
+    #     self.assertEqual(len(data), 5)
+
+    # def test_list_accounts_empty(self):
+    #     """It should return an empty list when there are no Accounts"""
+    #     resp = self.client.get(BASE_URL)
+    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
+    #     data = resp.get_json()
+    #     self.assertEqual(len(data), 0)
